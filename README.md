@@ -1,6 +1,6 @@
 ![Quo Preview](https://cms.protoqol.nl/assets/2ecc5f44-5fe5-4f15-95d6-ba365f4fcd5c)
 
-![Build status](https://img.shields.io/github/actions/workflow/status/Protoqol/Quo-ts/test.yml?style=flat-square&color=%23ec135b&logo=typescript)
+![Tests](https://img.shields.io/github/actions/workflow/status/Protoqol/Quo-ts/test.yml?style=flat-square&color=%23ec135b&logo=typescript)
 ![npm version](https://img.shields.io/npm/v/@protoqol/quo-ts?style=flat-square&color=%23ec135b&logo=npm)
 ![GPL-3.0 license](https://img.shields.io/github/license/Protoqol/Quo-ts?style=flat-square&color=%23ea135a)
 
