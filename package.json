@@ -1,29 +1,32 @@
 {
-  "name": "@protoqol/quo-ts",
-  "version": "1.0.0",
-  "type": "module",
-  "main": "./target/main.js",
-  "module": "./target/main.js",
-  "types": "./target/main.d.ts",
-  "exports": {
+  "name"           : "@protoqol/quo-ts",
+  "version"        : "1.0.0",
+  "type"           : "module",
+  "main"           : "./target/main.js",
+  "module"         : "./target/main.js",
+  "types"          : "./target/main.d.ts",
+  "exports"        : {
     ".": {
       "import": "./target/main.js",
-      "types": "./target/main.d.ts"
+      "types" : "./target/main.d.ts"
     }
   },
-  "license": "GPL-3.0-only",
-  "engines": {
+  "license"        : "GPL-3.0-only",
+  "engines"        : {
     "node": ">=20.0.0"
   },
-  "scripts": {
-    "build": "tsc"
+  "scripts"        : {
+    "build": "tsc",
+    "test" : "tsx --test src/main.test.ts"
   },
   "devDependencies": {
-    "@types/node": "^25.4.0",
+    "@types/node"    : "^25.4.0",
     "@types/xxhashjs": "^0.2.4",
-    "typescript": "^5.9.3"
+    "msw"            : "^2.12.10",
+    "tsx"            : "^4.21.0",
+    "typescript"     : "^5.9.3"
   },
-  "dependencies": {
+  "dependencies"   : {
     "xxhashjs": "^0.2.2"
   }
 }

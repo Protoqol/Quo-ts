@@ -12,16 +12,34 @@ import {make_request} from "./request.js";
  *
  * @param args The values to send.
  */
-export const quo = (
+export const quo = async (
     ...args: any[]
-): void => {
+): Promise<void> => {
     const [STACK, CALLER, CALLER_FRAME] = get_stack_trace();
     const [MS, UID] = get_time();
     const THREAD = get_thread_info();
     const [CPU, MEM] = get_system_usage();
     const [RT, VERSION] = get_runtime();
 
-    const package_name = "quo-ts";
+    let package_name = "quo-browser";
+
+    if (typeof process !== "undefined") {
+        try {
+            const fs = await import("fs");
+            const path = await import("path");
+            const pkgPath = path.join(process.cwd(), "package.json");
+
+            if (fs.existsSync(pkgPath)) {
+                const pkg = JSON.parse(fs.readFileSync(pkgPath, "utf8"));
+
+                if (pkg.name) {
+                    package_name = pkg.name;
+                }
+            }
+        } catch (e) {
+            package_name = "quo-node";
+        }
+    }
 
     args.forEach((value, index) => {
         let final_name = "unknown";
@@ -77,7 +95,7 @@ export const quo = (
 
         const payload: QuoPayload = {
             meta    : {
-                id             : "",
+                id             : get_hash(VAR_TYPE, final_name, package_name),
                 uid            : UID,
                 origin         : package_name,
                 sender_origin  : final_file && final_line ? `${final_file}:${final_line}` : package_name,
@@ -86,7 +104,7 @@ export const quo = (
                     var_type      : VAR_TYPE,
                     name          : final_name,
                     value         : VALUE_STR,
-                    is_mutable    : false, // In JS we can't reliably know mutability from just a reference in a function call
+                    is_mutable    : !IS_CONSTANT,
                     is_constant   : IS_CONSTANT,
                     is_expression : IS_EXPRESSION,
                     memory_address: null,
