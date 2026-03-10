@@ -1,9 +1,8 @@
 import XXH from "xxhashjs";
-import type {QuoPayload} from "../types/quo.js";
 
-export const get_hash = (dump: QuoPayload): string => {
+export const get_hash = (var_type: string, name: string, origin: string): string => {
     let seed = 123456789;
-    let to_hash = `${dump.meta.variable.var_type}, ${dump.meta.variable.name}, ${dump.meta.origin}`;
+    let to_hash = `${var_type}, ${name}, ${origin}`;
     const HASHED = XXH.h64(to_hash, seed).toString(16).toUpperCase();
 
     return `0x${HASHED}`;
