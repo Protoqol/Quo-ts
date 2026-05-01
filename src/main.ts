@@ -8,6 +8,9 @@ import {get_hash} from "./info/hash.js";
 import {get_uuid} from "./info/uuid.js";
 import {make_request} from "./request.js";
 
+const SOURCE_CACHE: Record<string, string[]> = {};
+const FETCHING_CACHE: Record<string, Promise<string[] | null>> = {};
+
 /**
  * Sends data to Quo.
  *
@@ -60,6 +63,32 @@ export const quo = async (...args: any[]): Promise<void> => {
             if (package_name === "quo-browser") {
                 package_name = "quo-node";
             }
+        }
+    } else if (typeof window !== "undefined" && CALLER_FRAME?.file) {
+        const file = CALLER_FRAME.file;
+        if (SOURCE_CACHE[file]) {
+            lines = SOURCE_CACHE[file]!;
+        } else if (file.startsWith("http") || file.startsWith("/") || file.startsWith("file://")) {
+            try {
+                if (!FETCHING_CACHE[file]) {
+                    FETCHING_CACHE[file] = fetch(file)
+                        .then(r => r.ok ? r.text() : null)
+                        .then(t => t ? t.split(/\r?\n/) : null)
+                        .catch(() => null);
+                }
+                const fetched_lines = await FETCHING_CACHE[file];
+                if (fetched_lines) {
+                    SOURCE_CACHE[file] = fetched_lines;
+                    lines = fetched_lines;
+                }
+            } catch (e) {
+                // Ignore
+            }
+        }
+
+        if (lines.length > 0 && CALLER_FRAME.line) {
+            const startLine = Math.max(0, CALLER_FRAME.line - 1);
+            RAW = lines.slice(startLine, startLine + 100).join("\n");
         }
     }
 
@@ -244,7 +273,7 @@ export const quo = async (...args: any[]): Promise<void> => {
                 variable       : {
                     var_type      : var_type,
                     name          : name_to_send,
-                    value         : var_type === "string" ? `"${value_str}"` : value_str,
+                    value         : value_str,
                     is_mutable    : is_mutable_declared,
                     is_constant   : IS_CONSTANT,
                     is_expression : IS_EXPRESSION,
@@ -261,9 +290,9 @@ export const quo = async (...args: any[]): Promise<void> => {
             language: final_file?.includes(".js") ? QuoPayloadLanguage.Javascript : QuoPayloadLanguage.Typescript,
         };
 
-        const host = (typeof process !== "undefined" ? process.env["QUO_HOST"] : null) ?? "http://127.0.0.1";
-        const port = (typeof process !== "undefined" ? process.env["QUO_PORT"] : null) ?? "7312";
-        const target = `${host}:${port}/payload`;
+        const host = (typeof process !== "undefined" ? process.env?.["QUO_HOST"] : null) ?? (typeof window !== "undefined" ? (window as any).QUO_HOST : null) ?? "http://127.0.0.1";
+        const port = (typeof process !== "undefined" ? process.env?.["QUO_PORT"] : null) ?? (typeof window !== "undefined" ? (window as any).QUO_PORT : null) ?? "7312";
+        const target = `${host.startsWith("http") ? host : `http://${host}`}:${port}/payload`;
 
         make_request(target, payload);
     });
