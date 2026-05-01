@@ -34,6 +34,7 @@ jobs:
   publish:
     runs-on: ubuntu-latest
     environment: publishing
+    needs: build
     permissions:
       contents: read
       id-token: write
