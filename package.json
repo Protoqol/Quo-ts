@@ -1,6 +1,7 @@
 {
   "name"           : "@protoqol/quo-ts",
   "version"        : "0.1.0",
+  "description"    : "Companion package for the Quo debugger.",
   "type"           : "module",
   "main"           : "./target/main.js",
   "module"         : "./target/main.js",
