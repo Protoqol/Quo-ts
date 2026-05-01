@@ -58,9 +58,11 @@ In browser environments, you can configure the target host and port by setting t
 calling `quo`:
 
 ```javascript
-window.QUO_HOST = 'http://192.168.1.50';
+window.QUO_HOST = 'http://127.0.0.1';
 window.QUO_PORT = '7312';
 ```
+
+> The correct port can be found in the bottom left in the Quo client. Do note that it is not recommended to change host.
 
 ### Usage
 
