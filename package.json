@@ -24,6 +24,10 @@
     "test"       : "tsx --test src/main.test.ts",
     "manual_test": "tsx test.js"
   },
+  "dependencies"   : {
+    "uuid"    : "^14.0.0",
+    "xxhashjs": "^0.2.2"
+  },
   "devDependencies": {
     "@types/node"    : "^25.4.0",
     "@types/xxhashjs": "^0.2.4",
@@ -31,9 +35,5 @@
     "msw"            : "^2.12.10",
     "tsx"            : "^4.21.0",
     "typescript"     : "^5.9.3"
-  },
-  "dependencies"   : {
-    "uuid"    : "^14.0.0",
-    "xxhashjs": "^0.2.2"
   }
 }
