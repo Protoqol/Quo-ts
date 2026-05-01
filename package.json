@@ -15,7 +15,7 @@
   },
   "homepage"       : "https://quo.protoqol.sh",
   "description"    : "Companion package for the Quo debugger.",
-  "version"        : "0.1.1",
+  "version"        : "0.1.2",
   "keywords"       : [
     "node",
     "debugger",
