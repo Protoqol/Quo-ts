@@ -16,8 +16,9 @@
     "node": ">=20.0.0"
   },
   "scripts"        : {
-    "build": "tsc",
-    "test" : "tsx --test src/main.test.ts"
+    "build"      : "tsc",
+    "test"       : "tsx --test src/main.test.ts",
+    "manual_test": "tsx test.js"
   },
   "devDependencies": {
     "@types/node"    : "^25.4.0",
@@ -27,6 +28,7 @@
     "typescript"     : "^5.9.3"
   },
   "dependencies"   : {
+    "uuid"    : "^14.0.0",
     "xxhashjs": "^0.2.2"
   }
 }

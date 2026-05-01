@@ -1,8 +1,9 @@
 ![Quo Preview](https://cms.protoqol.nl/assets/2ecc5f44-5fe5-4f15-95d6-ba365f4fcd5c)
 
-![Tests](https://img.shields.io/github/actions/workflow/status/Protoqol/Quo-ts/test.yml?style=flat-square&color=%23ec135b&logo=typescript)
-![npm version](https://img.shields.io/npm/v/@protoqol/quo-ts?style=flat-square&color=%23ec135b&logo=npm)
-![GPL-3.0 license](https://img.shields.io/github/license/Protoqol/Quo-ts?style=flat-square&color=%23ea135a)
+![Build status](https://img.shields.io/github/actions/workflow/status/Protoqol/Quo-php/testkit.yml?style=flat-square&color=%23ec135b&logo=php)
+![Packagist Version](https://img.shields.io/packagist/v/protoqol/quo-php?style=flat-square&logo=packagist&color=%23ec135b)
+![PHP Version](https://img.shields.io/packagist/php-v/protoqol/quo-php?style=flat-square&logo=php&color=%23ec135b)
+![LGPL-3.0-only license](https://img.shields.io/packagist/l/Protoqol/quo-php?style=flat-square&color=%23ea135a)
 
 Quo is a cross-platform variable dumper designed to make debugging easier. It receives data from your application and
 displays it in a clean desktop interface, allowing you to inspect complex values in real-time without cluttering your
@@ -13,86 +14,80 @@ terminal or browser console.
 
 ### Noteworthy features
 
-- **Environment-Aware**: Node and browser environments supported.
 - **Multiple arguments**: Inspect multiple variables or expressions in a single call.
-- **Expression Parsing**: Easy expression debugging e.g. `quo(1 + 1)` or `quo(Math.max(x, y))`.
+- **Rich Metadata**: Capture stack traces, system metrics, memory addresses, and more.
+
+### Requirements
+
+- **PHP**: >= 7.1
 
 ### Installation
 
-#### Node.js
-
-Install via npm:
+Add `quo-php` to your project using composer:
 
 ```bash
-npm install @protoqol/quo-ts
-```
-
-Or yarn:
-
-```bash
-yarn add @protoqol/quo-ts
-```
-
-#### Browser / CDN
-
-You can use `quo-ts` directly in the browser like so:
-
-```html
-
-<script type="text/javascript" src="https://unpkg.com/@protoqol/quo-ts@latest/target/main.js"></script>
-
-<script type="module">
-    import {quo} from 'https://esm.sh/@protoqol/quo-ts';
-
-    // Also automatically attached to window.quo
-    window.quo("Hello from the browser!");
-</script>
+composer require protoqol/quo-php --dev
 ```
 
 ### Usage
 
-#### TypeScript / ESM (Node.js)
+Use the `quo` function and pass variables to inspect:
 
-Import the `quo` function and pass variables to inspect. Note that `quo` is asynchronous.
+```php
+<?php
 
-```typescript
-import {quo} from "@protoqol/quo-ts";
+require_once 'vendor/autoload.php';
 
-const user = {
-    id      : 1,
-    username: "jdoe",
-};
+$user_id = 42;
+$user = [
+    'id' => 1,
+    'username' => 'jdoe'
+];
 
-async function main() {
-    const userId = 42;
+// Dump a single variable
+quo($user_id);
 
-    // Dump a single variable
-    await quo(userId);
+// Dump multiple variables at once
+quo($user_id, $user);
 
-    // Dump multiple variables at once
-    await quo(userId, user);
-
-    // Some quick maths
-    await quo(42 * 42, Math.random());
-}
-
-main();
+// Some quick maths
+quo(42 * 42);
 ```
 
 ### Configuration
 
-You can customise the Quo server address using environment variables in Node.js:
+You can customise the Quo server address in your `composer.json` or environment variables.
 
-- `QUO_HOST`: The host where Quo is running (default: `http://127.0.0.1`).
-- `QUO_PORT`: The port Quo is listening on (default: `7312`).
+#### Via composer.json
 
-> The correct port can be found in the bottom left in the Quo client.
+Add an `extra` block to your `composer.json`:
 
-In browser environments, `quo-ts` defaults to `http://127.0.0.1:7312`.
+```json
+{
+  "extra": {
+    "quo-php": {
+      "host": "127.0.0.1",
+      "port": 7312
+    }
+  }
+}
+```
+
+> The correct port can be found in the bottom left in the Quo client. Do note that it is **not** to change host.
+
+---
+
+## Dependency justification
+
+| Package       | Used for                                                                                                                     |
+|---------------|------------------------------------------------------------------------------------------------------------------------------|
+| `ext-json`    | Serializes debug data into JSON format for transmission to the Quo client.                                                   |
+| `ext-curl`    | Transmits the captured debug payloads to the Quo desktop client over HTTP.                                                   |
+| `ramsey/uuid` | Generates unique UUIDv4 identifiers for each individual dump event, enabling the client to uniquely identify and track them. |
 
 ---
 
 ## License
 
-Quo is open-source software licensed under the [GPL-3 licence](.github/LICENSE).
+Quo is open-source software licensed under the [GPL-3 licence](LICENSE).
 

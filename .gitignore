@@ -4,3 +4,7 @@ target/
 node_modules/
 
 reference.rs
+
+src-reference/
+
+test.js

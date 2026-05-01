@@ -1,6 +1,6 @@
 export const get_thread_info = (): string | null => {
     if (typeof window === "undefined" && typeof process === "object") {
-        return "main";
+        return process.pid?.toString() || "main";
     }
 
     if (typeof window !== "undefined") {

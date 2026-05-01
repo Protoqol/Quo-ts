@@ -4,7 +4,6 @@
     "outDir"                            : "./target",
     "module"                            : "nodenext",
     "target"                            : "es2023",
-    // For nodejs:
     "lib"                               : [
       "es2023",
       "dom"
@@ -27,6 +26,7 @@
     "verbatimModuleSyntax"              : true,
     "isolatedModules"                   : true,
     "noUncheckedSideEffectImports"      : true,
+    "allowImportingTsExtensions"        : true,
     "moduleDetection"                   : "force",
     "skipLibCheck"                      : true,
   }

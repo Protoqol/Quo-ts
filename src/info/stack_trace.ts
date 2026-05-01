@@ -24,12 +24,22 @@ export const get_stack_trace = (): [string[] | null, string | null, StackFrame |
             continue;
         }
 
+        const LOWER_LINE = LINE.toLowerCase();
         // Skip internal frames
-        if (LINE.includes("get_stack_trace") || LINE.includes("quo-ts") || LINE.includes("node:internal")) {
+        const isInternal = LOWER_LINE.includes("get_stack_trace") ||
+            LOWER_LINE.includes("node:internal") ||
+            LOWER_LINE.includes("at quo ") ||
+            // Only skip if it's actually the library's main file or this stack trace file
+            ((LOWER_LINE.includes("src/main.ts") || LOWER_LINE.includes("src\\main.ts") ||
+                    LOWER_LINE.includes("src/info/stack_trace.ts") || LOWER_LINE.includes("src\\info\\stack_trace.ts")) &&
+                LOWER_LINE.includes("quo-ts"));
+
+        if (isInternal) {
             continue;
         }
 
         let frameName = LINE;
+
         // Match "at functionName (file:line:col)" or "at file:line:col"
         const MATCH = LINE.match(/at (.*) \((.*):(\d+):(\d+)\)/) || LINE.match(/at (.*):(\d+):(\d+)/);
 
@@ -56,7 +66,7 @@ export const get_stack_trace = (): [string[] | null, string | null, StackFrame |
         }
 
         if (!caller) {
-            caller = frameName;
+            caller = frameName.replace("file:///", "");
             callerFrame = {
                 name,
                 file,
@@ -66,7 +76,7 @@ export const get_stack_trace = (): [string[] | null, string | null, StackFrame |
             };
         }
 
-        FRAMES.push(frameName);
+        FRAMES.push(frameName.replace("file:///", ""));
     }
 
     return [FRAMES.length > 0 ? FRAMES : null, caller, callerFrame];

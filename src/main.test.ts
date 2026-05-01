@@ -14,7 +14,9 @@ describe("quo() function tests", () => {
         http.post("http://127.0.0.1:7312/payload", async ({request}) => {
             const body = await request.clone().text();
             const payload = JSON.parse(body);
+
             capturedPayloads.push(payload);
+
             return new HttpResponse(JSON.stringify({success: true}), {
                 status : 200,
                 headers: {"Content-Type": "application/json"},
@@ -37,7 +39,9 @@ describe("quo() function tests", () => {
         await new Promise(resolve => setTimeout(resolve, 100));
 
         assert.strictEqual(capturedPayloads.length, 1);
+
         const p = capturedPayloads[0]!;
+
         assert.strictEqual(p.meta.variable.value, "42");
         assert.strictEqual(p.meta.variable.var_type, "number");
         assert.strictEqual(p.language, QuoPayloadLanguage.Typescript);
@@ -46,6 +50,7 @@ describe("quo() function tests", () => {
     test("should send multiple variables correctly", async () => {
         const a = "hello";
         const b = true;
+
         await quo(a, b);
 
         await new Promise(resolve => setTimeout(resolve, 100));
@@ -90,25 +95,64 @@ describe("quo() function tests", () => {
         assert.ok(p.meta.runtime);
     });
 
-    test("should have correct package name in meta", async () => {
-        let capturedPayload: any = null;
-
-        const server = setupServer(
-            http.post("http://127.0.0.1:7312/payload", async ({request}) => {
-                capturedPayload = await request.json();
-                return HttpResponse.json({success: true});
-            }),
-        );
-
-        server.listen();
-
-        const x = 10;
-        await quo(x);
+    test("should format objects as JSON", async () => {
+        const obj = {a: 1, b: "test"};
+        await quo(obj);
 
         await new Promise(resolve => setTimeout(resolve, 100));
 
-        assert.strictEqual(capturedPayload.meta.origin, "@protoqol/quo-ts");
+        assert.strictEqual(capturedPayloads.length, 1);
+        const p = capturedPayloads[0]!;
+        // Expected: {"a":1,"b":"test"}
+        assert.strictEqual(p.meta.variable.value, "{\"a\":1,\"b\":\"test\"}");
+    });
 
-        server.close();
+    test("should use argument index as id", async () => {
+        await quo(1, 2, 3);
+
+        await new Promise(resolve => setTimeout(resolve, 100));
+
+        assert.strictEqual(capturedPayloads.length, 3);
+        assert.strictEqual(capturedPayloads[0]!.meta.id, 0);
+        assert.strictEqual(capturedPayloads[1]!.meta.id, 1);
+        assert.strictEqual(capturedPayloads[2]!.meta.id, 2);
+    });
+
+    test("should format array types with element types", async () => {
+        await quo([1, "two", true]);
+
+        await new Promise(resolve => setTimeout(resolve, 100));
+
+        assert.strictEqual(capturedPayloads.length, 1);
+        assert.strictEqual(capturedPayloads[0]!.meta.variable.var_type, "Array<number | string | boolean>");
+    });
+
+    test("should use TypeScript types for null and classes", async () => {
+        class MyClass {
+        }
+
+        await quo(null, new MyClass(), new Date());
+
+        await new Promise(resolve => setTimeout(resolve, 100));
+
+        assert.strictEqual(capturedPayloads.length, 3);
+        assert.strictEqual(capturedPayloads[0]!.meta.variable.var_type, "null");
+        assert.strictEqual(capturedPayloads[1]!.meta.variable.var_type, "MyClass");
+        assert.strictEqual(capturedPayloads[2]!.meta.variable.var_type, "Date");
+    });
+
+    test("should handle multi-line calls and complex expressions", async () => {
+        await quo(
+            1 + 1,
+            {
+                a: 1,
+            },
+        );
+
+        await new Promise(resolve => setTimeout(resolve, 100));
+
+        assert.strictEqual(capturedPayloads.length, 2);
+        assert.strictEqual(capturedPayloads[0]!.meta.variable.name, "1 + 1");
+        assert.strictEqual(capturedPayloads[1]!.meta.variable.name, "JSON");
     });
 });
