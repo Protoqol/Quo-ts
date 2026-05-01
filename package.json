@@ -24,6 +24,9 @@
   ],
   "license"        : "GPL-3.0-only",
   "type"           : "module",
+  "files"          : [
+    "target"
+  ],
   "main"           : "./target/main.js",
   "module"         : "./target/main.js",
   "browser"        : "./target/quo.bundle.js",
