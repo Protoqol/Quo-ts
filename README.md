@@ -29,13 +29,13 @@ terminal or browser console.
 Install via npm:
 
 ```bash
-npm install @protoqol/quo-ts
+npm install -D @protoqol/quo-ts
 ```
 
 Or yarn:
 
 ```bash
-yarn add @protoqol/quo-ts
+yarn add @protoqol/quo-ts -D
 ```
 
 #### Browser / CDN
